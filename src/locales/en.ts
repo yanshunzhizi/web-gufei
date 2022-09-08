@@ -1,0 +1,20 @@
+export default {
+  form: {
+    uscc: "社会信用代码",
+    etag: "电子标签编码",
+    productionCode: "产生设施",
+    generationCode: "产生批次编码",
+    generationTime: "产生时间",
+    quantity: "产生量",
+    unit: "计量单位",
+    categoryVersion: "废物名录年份",
+    wasteProperty: "物理性状",
+    wasteCode: "废物代码",
+    wasteName: "废物名称",
+    wasteCategoryCode: "废物类别",
+    containerType: "包装类型",
+    containerMaterial: "包装材质",
+    containerStandard: "包装规格",
+    containerCount: "包装数量",
+  },
+};

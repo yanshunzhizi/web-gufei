@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import Form from "@/components/Form/index.vue";
 import { FormItemName } from "@/config/enum";
 import type { FormItem } from "@/types";
@@ -24,11 +24,13 @@ const formItemNames = [
 ];
 const globleStore = useGlobleStore();
 
-const formItems = reactive<FormItem[]>(
-  formItemNames.map(
+const formItems = computed(() => {
+  return formItemNames.map(
     (formItemName) => globleStore.form.items[formItemName] as FormItem
-  )
-);
+  );
+});
+// console.log("formItems", formItems);
+// window.debugger;
 </script>
 <template>
   <Form :formItems="formItems"></Form>

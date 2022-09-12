@@ -1,10 +1,6 @@
 <script setup lang="ts">
-// import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from "vue-router";
 // import HelloWorld from './components/HelloWorld.vue'
-import AddOrEdit from "@/views/product/add.vue";
-import { useGlobleStore } from "@/stores/globle";
-const globleStore = useGlobleStore();
-globleStore.getCompanyInfo();
 </script>
 <template>
   <!-- <header>
@@ -20,10 +16,15 @@ globleStore.getCompanyInfo();
     </div>
   </header>
   <RouterView /> -->
-  <AddOrEdit></AddOrEdit>
+  <!-- <AddOrEdit></AddOrEdit> -->
+  <RouterView></RouterView>
 </template>
 
 <style scoped>
+body {
+  font-family: "Microsoft YaHei";
+  color: "#fff";
+}
 header {
   line-height: 1.5;
   max-height: 100vh;

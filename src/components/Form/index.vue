@@ -2,13 +2,13 @@
 import {
   ref,
   onBeforeMount,
-  defineProps,
   withDefaults,
-  defineEmits,
   reactive,
+  defineEmits,
+  defineProps,
 } from "vue";
 import dayjs from "dayjs";
-import { FormItemType, OperateType, DataType } from "@/config/enum";
+import { FormItemType, OperateType } from "@/config/enum";
 import { useGlobleStore } from "@/stores/globle";
 import type { FormItem } from "@/types";
 import {
@@ -36,25 +36,21 @@ const emit = defineEmits<{
 }>();
 
 const formData = reactive<Record<string, any>>({});
-
 const showPickers = reactive<Record<string, boolean>>({});
 const globalStore = useGlobleStore();
+
 // const dataType = ref<DataType>(DataType.Generate);
-const onSubmit = async (values) => {
-  const operateType = formData.sid.value ? OperateType.Edit : OperateType.Add;
-  const result = await globalStore.opreateTZ(
-    dataType.value,
-    operateType,
-    formData
-  );
+const onSubmit = async () => {
+  const operateType = formData.sid ? OperateType.Edit : OperateType.Add;
+  const result = await globalStore.opreateTZ(operateType, formData);
   if (result && result.success && result.data) {
     Object.assign(formData, result.data);
   }
   emit("submit", formData);
 };
 onBeforeMount(() => {
-  props.formItems.forEach((item, index) => {
-    formData[item.name].value =
+  props.formItems.forEach((item) => {
+    formData[item.name] =
       item.default instanceof Function ? item.default() : item.default;
   });
 });
@@ -95,42 +91,42 @@ onBeforeMount(() => {
             @click="showPickers[formItem.name] = true"
             is-link
           />
-          <div v-show="showPickers[formItem.name as string]">
-            <Popup position="bottom">
-              <Picker
-                :columns="formItem.items!.map((item) => item.label)"
-                @confirm="(value, index) => {
-                    formData[formItem.name as string]  = formItem.items![index].value;
-                    showPickers[formItem.name as string] = false;
+          <Popup position="bottom" :show="showPickers[formItem.name]">
+            <Picker
+              :columns="formItem.items!.map((item) => item.label)"
+              @confirm="(value, index) => {
+                    formData[formItem.name]  = formItem.items![index].value;
+                    showPickers[formItem.name] = false;
                   }"
-                @cancel="showPickers[formItem.name as string] = false"
-              />
-            </Popup>
-          </div>
+              @cancel="showPickers[formItem.name] = false"
+            />
+          </Popup>
         </div>
         <div v-if="formItem.type === FormItemType.Time" v-show="!formItem.hide">
           <Cell
             :value="formData[formItem.name]"
             :title="formItem.label"
-            @click="showPickers[formItem.name] = true"
+            @click="
+              () => {
+                showPickers[formItem.name] = true;
+              }
+            "
             is-link
           />
-          <div v-show="showPickers[formItem.name as string]">
-            <Popup position="bottom">
-              <DatetimePicker
-                type="datetime"
-                @confirm="
-                  (value) => {
+          <Popup position="bottom" :show="showPickers[formItem.name]">
+            <DatetimePicker
+              type="datetime"
+              @confirm="
+                  (value:Date) => {
                     formData[formItem.name] = dayjs(value).format(
                       'YYYY-MM-DD HH:mm:ss'
                     );
                     showPickers[formItem.name] = false;
                   }
                 "
-                @cancel="showPickers[formItem.name as string] = false"
-              />
-            </Popup>
-          </div>
+              @cancel="showPickers[formItem.name] = false"
+            />
+          </Popup>
         </div>
         <div
           v-if="formItem.type === FormItemType.Checkbox"

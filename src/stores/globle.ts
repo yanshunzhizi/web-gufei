@@ -186,14 +186,12 @@ export const useGlobleStore = defineStore("global", () => {
     } as Record<FormItemName, FormItem>,
   });
   const opreateTZ = async (
-    dataType: DataType,
     operateType: OperateType,
     data: Record<string, any>
   ) => {
     const result = await apis.operateTZ({
       ...data,
       op: operateType + "",
-      dataType: dataType + "",
     });
     return result;
   };
@@ -208,6 +206,7 @@ export const useGlobleStore = defineStore("global", () => {
     }
     return result;
   };
+
   return {
     form,
     company,

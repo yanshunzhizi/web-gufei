@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import { FormItemType, OperateType } from "@/config/enum";
 import { useGlobleStore } from "@/stores/globle";
 import type { FormItem } from "@/types";
+import BackButton from "./backButton.vue";
+import type { RouteLocationRaw } from "vue-router";
 import {
   Form,
   Field,
@@ -22,13 +24,18 @@ import {
   Picker,
   Cell,
   Popup,
+  Notify,
 } from "vant";
 
 export interface Props {
   formItems: FormItem[];
+  backTo?: RouteLocationRaw;
+  showBackBtn?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   formItems: () => [],
+  backTo: undefined,
+  showBackBtn: false,
 });
 
 const emit = defineEmits<{
@@ -38,15 +45,39 @@ const emit = defineEmits<{
 const formData = reactive<Record<string, any>>({});
 const showPickers = reactive<Record<string, boolean>>({});
 const globalStore = useGlobleStore();
+const loading = ref<boolean>(false);
 
 // const dataType = ref<DataType>(DataType.Generate);
 const onSubmit = async () => {
-  const operateType = formData.sid ? OperateType.Edit : OperateType.Add;
-  const result = await globalStore.opreateTZ(operateType, formData);
-  if (result && result.success && result.data) {
-    Object.assign(formData, result.data);
+  loading.value = true;
+  let message: string = undefined;
+  try {
+    const operateType = OperateType.Add;
+    const data = { ...formData };
+    for (const key in data) {
+      if (!data[key]) {
+        delete data[key];
+      } else if (data[key] instanceof Array) {
+        data[key] = data[key].join(",");
+      }
+    }
+    const result = await globalStore.opreateTZ(operateType, data);
+    if (result && result.success && result.data) {
+      Object.assign(formData, result.data);
+    } else {
+      message = "提交失败";
+    }
+  } catch (e) {
+    console.log("error", e);
+    message = "网络请求异常";
+  }
+  if (message) {
+    Notify({ type: "danger", message: message });
+  } else {
+    Notify({ type: "success", message: "提交成功" });
   }
   emit("submit", formData);
+  loading.value = false;
 };
 onBeforeMount(() => {
   props.formItems.forEach((item) => {
@@ -68,7 +99,13 @@ onBeforeMount(() => {
           v-show="!formItem.hide"
         >
           <Field
-            :type="formItem.type === FormItemType.Text ? 'text' : 'digit'"
+            :type="
+              formItem.type === FormItemType.Text
+                ? 'text'
+                : formItem.type === FormItemType.Float
+                ? 'number'
+                : 'digit'
+            "
             v-model="formData[formItem.name]"
             :name="formItem.name"
             :label="formItem.label"
@@ -95,8 +132,11 @@ onBeforeMount(() => {
             <Picker
               :columns="formItem.items!.map((item) => item.label)"
               @confirm="(value, index) => {
-                    formData[formItem.name]  = formItem.items![index].value;
+                    formData[formItem.name] = formItem.items![index].value;
                     showPickers[formItem.name] = false;
+                    if(formItem.change){
+                      formItem.change(formItem.items![index],formData);
+                    }
                   }"
               @cancel="showPickers[formItem.name] = false"
             />
@@ -151,8 +191,24 @@ onBeforeMount(() => {
         </div>
       </div>
     </CellGroup>
-    <div style="margin: 16px">
-      <Button round block type="primary" native-type="submit"> 提交 </Button>
+    <div
+      style="
+        margin: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <Button
+        type="primary"
+        :loading="loading"
+        native-type="submit"
+        style="width: 15vw"
+      >
+        提交
+      </Button>
+      <BackButton v-show="props.showBackBtn" :to="props.backTo"></BackButton>
+      <slot name="buttons" :formData="formData"></slot>
     </div>
   </Form>
 </template>

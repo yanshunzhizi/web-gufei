@@ -9,7 +9,9 @@ import selfUsage from "@/assets/selfUsage.png";
 import delegateOut from "@/assets/delegateOut.png";
 import scanCode from "@/assets/scanCode.png";
 
-import * as echarts from "echarts/core";
+import { useRouter, useRoute } from "vue-router";
+
+/* import * as echarts from "echarts/core";
 import {
   BarChart,
   // 系列类型的定义后缀都为 SeriesOption
@@ -39,10 +41,10 @@ type ECOption = echarts.ComposeOption<
   | TitleComponentOption
   | GridComponentOption
   | DatasetComponentOption
->;
+>; */
 
 // 注册必须的组件
-echarts.use([
+/* echarts.use([
   TitleComponent,
   GridComponent,
   DatasetComponent,
@@ -53,10 +55,10 @@ echarts.use([
   UniversalTransition,
   CanvasRenderer,
 ]);
-
-const option: ECOption = {
-  // ...
-};
+ */
+// const option: ECOption = {
+//   // ...
+// };
 
 const tabs = reactive<{ id: string; name: string }[]>([
   { id: "day", name: "日" },
@@ -67,17 +69,26 @@ const tabs = reactive<{ id: string; name: string }[]>([
 const selectedTabName = ref<string>(tabs[0].name);
 // console.log("formItems", formItems);
 // window.debugger;
+const router = useRouter();
 
 const menus = reactive<
-  { label: string; icon: string; id: string; style: unknown; color: string }[]
+  {
+    label: string;
+    icon: string;
+    id: string;
+    color: string;
+    onClick: () => void;
+  }[]
 >([
   {
     id: "recordProduct",
     label: "产废登记",
     icon: recordProduct,
     color: "#20d67b",
-    style: {
-      backgroundColor: "#20d67b",
+    onClick: () => {
+      router.push({
+        name: "productRecord",
+      });
     },
   },
   {
@@ -85,8 +96,13 @@ const menus = reactive<
     label: "产废入库",
     icon: inStore,
     color: "#5456e8",
-    style: {
-      backgroundColor: "#5456e8",
+    onClick: () => {
+      router.push({
+        name: "productList",
+        params: {
+          type: "1",
+        },
+      });
     },
   },
   {
@@ -94,8 +110,13 @@ const menus = reactive<
     label: "产废出库",
     icon: outStore,
     color: "#e6a14c",
-    style: {
-      backgroundColor: "#e6a14c",
+    onClick: () => {
+      router.push({
+        name: "productList",
+        params: {
+          type: "2",
+        },
+      });
     },
   },
   {
@@ -103,8 +124,10 @@ const menus = reactive<
     label: "自利用",
     icon: selfUsage,
     color: "#ed49a6",
-    style: {
-      backgroundColor: "#ed49a6",
+    onClick: () => {
+      router.push({
+        name: "productRecord",
+      });
     },
   },
   {
@@ -112,8 +135,10 @@ const menus = reactive<
     label: "委外",
     icon: delegateOut,
     color: "#a746db",
-    style: {
-      backgroundColor: "#a746db",
+    onClick: () => {
+      router.push({
+        name: "productRecord",
+      });
     },
   },
   {
@@ -121,13 +146,18 @@ const menus = reactive<
     label: "扫码",
     icon: scanCode,
     color: "#e3664d",
-    style: {
-      backgroundColor: "#e3664d",
+    onClick: () => {
+      router.push({
+        name: "productRecord",
+      });
     },
   },
 ]);
 
-const selectedMenu = (id: string) => {};
+const selectedMenu = (id: string) => {
+  const menu = menus.find((menus) => menus.id === id);
+  menu?.onClick();
+};
 const statisticsInfo = reactive<{
   summarys: {
     name: string;
@@ -146,7 +176,7 @@ const statisticsInfo = reactive<{
       unit: "吨",
       icon: product,
       color: "#f00",
-      value: 30000,
+      value: 18,
     },
     {
       name: "入库",
@@ -154,7 +184,7 @@ const statisticsInfo = reactive<{
       unit: "吨",
       icon: inStore,
       color: "#f00",
-      value: 30000,
+      value: 15,
     },
     {
       name: "出库",
@@ -162,7 +192,7 @@ const statisticsInfo = reactive<{
       unit: "吨",
       icon: outStore,
       color: "#f00",
-      value: 30000,
+      value: 10,
     },
     {
       name: "委外",
@@ -170,7 +200,7 @@ const statisticsInfo = reactive<{
       unit: "吨",
       icon: delegateOut,
       color: "#f00",
-      value: 30000,
+      value: 3,
     },
     {
       name: "自利用",
@@ -178,7 +208,7 @@ const statisticsInfo = reactive<{
       unit: "吨",
       icon: selfUsage,
       color: "#f00",
-      value: 30000,
+      value: 2,
     },
   ],
   chartDatas: [],
@@ -200,10 +230,14 @@ const storeInfos = reactive<
     capacity: 5000,
   },
 ]);
+
+// const charts = reactive<>;
 </script>
 <template>
   <!-- <Form :formItems="formItems"></Form> -->
-  <div style="background-color: #5e2ff6; color: #fff">
+  <div
+    style="background-color: #5e2ff6; color: #fff; width: 100vw; height: 100vh"
+  >
     <div style="width: 96vw; margin: 0 auto">
       <div
         style="
@@ -225,7 +259,12 @@ const storeInfos = reactive<
           <Button
             type="primary"
             :icon="menu.icon"
-            style="width: 100%; border-radius: 10px; border: none"
+            style="
+              width: 100%;
+              border-radius: 10px;
+              border: none;
+              font-weight: bold;
+            "
             :color="menu.color"
             @click="() => selectedMenu(menu.id)"
             >{{ menu.label }}</Button
@@ -315,7 +354,7 @@ const storeInfos = reactive<
                           style="
                             height: 40px;
                             display: flex;
-                            justify-content: flex-start;
+                            justify-content: center;
                             align-items: center;
                             font-size: 28px;
                             font-weight: bold;
@@ -340,7 +379,7 @@ const storeInfos = reactive<
                 </Row>
               </div>
               <div style="height: 10px"></div>
-              <Row :wrap="true" gutter="5" justify="space-between">
+              <!--   <Row :wrap="true" gutter="5" justify="space-between">
                 <Col
                   span="12"
                   style="margin-bottom: 5px; height: 60px"
@@ -408,16 +447,16 @@ const storeInfos = reactive<
                     </div>
                   </div>
                 </Col>
-              </Row>
+              </Row> -->
             </div>
           </div>
         </tab>
       </Tabs>
-      <div style="height: 20px"></div>
+      <!-- <div style="height: 20px"></div>
       <div>
         <div style="height: 220px; width: 100%; background-color: #f00"></div>
         <div style="background-color: #91e4f4; height: 300px"></div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

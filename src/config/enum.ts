@@ -14,7 +14,7 @@ export enum FormItemName {
   ContainerMaterial = "containerMaterial",
   ContainerStandard = "containerStandard",
   ContainerCount = "containerCount",
-  Etag = "etag",
+  Etag = "eTag",
   GenerationCode = "generationCode",
   GenerationTime = "generationTime",
   ProductionCode = "productionCode",
@@ -26,6 +26,19 @@ export enum FormItemName {
   WasteName = "wasteName",
   WasteCategoryCode = "wasteCategoryCode",
   Sid = "sid",
+  DataType1 = "dataType1",
+  DataType2 = "dataType2",
+  DataType3 = "dataType3",
+  DataType4 = "dataType4",
+  Principal = "principal",
+  InventoryCode = "inventoryCode",
+  InventoryOperateTime = "InventoryOperateTime",
+  InQuantity = "inQuantity",
+  StoragePrincipal = "storagePrincipal",
+  OutTime = "outTime",
+  OutCode = "outCode",
+  OutQuantity = "outQuantity",
+  OutPrincipal = "outPrincipal",
 }
 
 export enum DataType {
@@ -39,4 +52,9 @@ export enum OperateType {
   Add = 1,
   Edit = 2,
   Delete = 3,
+}
+
+export enum WasteType {
+  InStore = "1",
+  OutStore = "2",
 }

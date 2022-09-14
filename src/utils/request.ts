@@ -59,9 +59,6 @@ export const sendPost = async (url: string, data?: Record<string, unknown>) => {
   const response = await window.fetch(url, {
     method: "POST",
     body: data ? JSON.stringify(data) : null,
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
   return await responseHandler(response);
 };

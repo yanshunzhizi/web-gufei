@@ -1,4 +1,13 @@
-import type { FormItemType } from "@/config/enum";
+import type { FormItemType, FormItemName } from "@/config/enum";
+
+declare global {}
+
+declare module "vue" {
+  interface ComponentCustomProperties {
+    window: Window;
+  }
+}
+
 export interface FormItem {
   name: string;
   type: FormItemType;
@@ -7,5 +16,9 @@ export interface FormItem {
   rules: any[];
   hide?: boolean;
   config?: Record<string, any>;
-  items?: { label: string; value: string }[];
+  items?: { label: string; value: string; data?: unknown }[];
+  change?: (
+    item: { label: string; value: string; data?: unknown },
+    formData: Record<FormItemName, unknown>
+  ) => void;
 }

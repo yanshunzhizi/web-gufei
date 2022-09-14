@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import ProductAdd from "@/views/product/add.vue";
+import ProductRecord from "@/views/product/record.vue";
 import ProductIndex from "@/views/product/index.vue";
+import ProductList from "@/views/product/list.vue";
+import ProductInStore from "@/views/product/inStore.vue";
+import ProductOutStore from "@/views/product/outStore.vue";
+import ProductDetail from "@/views/product/detail.vue";
 import { useGlobleStore } from "@/stores/globle";
 
 const router = createRouter({
@@ -13,14 +17,38 @@ const router = createRouter({
       redirect: "/product/index",
       children: [
         {
-          path: "add",
-          name: "productAdd",
-          component: ProductAdd,
+          path: "record",
+          name: "productRecord",
+          component: ProductRecord,
         },
         {
           path: "index",
           name: "productIndex",
           component: ProductIndex,
+        },
+        {
+          path: "inStore/:eTag",
+          name: "productInStore",
+          component: ProductInStore,
+          props: true,
+        },
+        {
+          path: "outStore/:eTag",
+          name: "productOutStore",
+          component: ProductOutStore,
+          props: true,
+        },
+        {
+          path: "list/:type",
+          name: "productList",
+          component: ProductList,
+          props: true,
+        },
+        {
+          path: "detail/:eTag",
+          name: "productDetail",
+          component: ProductDetail,
+          props: true,
         },
       ],
     },
@@ -35,14 +63,15 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
+      redirect: "/product",
+      // component: HomeView,
     },
   ],
 });
 
 router.beforeEach(async (to, from) => {
   const globalStore = useGlobleStore();
-  if (!globalStore.company) {
+  if (!globalStore.company?.uscc) {
     await globalStore.getCompanyInfo();
   }
 });

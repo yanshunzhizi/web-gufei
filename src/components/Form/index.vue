@@ -52,7 +52,7 @@ const onSubmit = async () => {
   loading.value = true;
   let message: string = undefined;
   try {
-    const operateType = OperateType.Add;
+    const operateType = formData.sid ? OperateType.Edit : OperateType.Add;
     const data = { ...formData };
     for (const key in data) {
       if (!data[key]) {

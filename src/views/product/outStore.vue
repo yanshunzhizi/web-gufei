@@ -13,6 +13,7 @@ const props = defineProps<Props>();
 
 const formItemNames = [
   FormItemName.Sid,
+  FormItemName.Etag,
   FormItemName.Uscc,
   FormItemName.OutCode,
   FormItemName.OutTime,
@@ -34,18 +35,24 @@ const globleStore = useGlobleStore();
 
 let formItems = computed(() => {
   return formItemNames.map((formItemName) => {
-    const waste = globleStore.wastes.find((waste) => waste.eTag === props.eTag);
     const formItem = globleStore.form.items[formItemName];
     let data: any = formItem.default;
-    if (formItemName in waste) {
-      if (formItem.type === FormItemType.Checkbox) {
-        if (waste[formItemName]) {
-          data = (waste[formItemName] as string).split(",");
+    if (formItemName === FormItemName.Sid) {
+      data = undefined;
+    } else {
+      const waste = globleStore.wastes.find(
+        (waste) => waste.eTag === props.eTag
+      );
+      if (formItemName in waste) {
+        if (formItem.type === FormItemType.Checkbox) {
+          if (waste[formItemName]) {
+            data = (waste[formItemName] as string).split(",");
+          } else {
+            data = [];
+          }
         } else {
-          data = [];
+          data = waste[formItemName];
         }
-      } else {
-        data = waste[formItemName];
       }
     }
     return {
